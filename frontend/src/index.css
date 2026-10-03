@@ -228,43 +228,64 @@
   --admin-shadow-lg: 0 24px 60px -20px rgb(15 29 51 / 35%);
   background: var(--admin-canvas);
   color: var(--admin-ink);
+  color-scheme: light;
 }
 .admin-shell .tabular { font-variant-numeric: tabular-nums; }
 
 /* Sidebar */
-.admin-sidebar { background: #fff; border-right: 1px solid var(--admin-line); }
-.admin-brand { border-bottom: 1px solid var(--admin-line); }
+.admin-sidebar {
+  background: #fff;
+  border-right: 1px solid var(--admin-line);
+  color: var(--admin-ink-2);
+}
+.admin-side-scroll { scrollbar-width: thin; scrollbar-color: #d6dee9 transparent; }
 .admin-nav-section {
-  padding: 1rem .75rem .35rem;
+  padding: 0 .75rem .45rem;
   color: #94a3b8;
-  font-size: .66rem;
+  font-size: .65rem;
   font-weight: 700;
-  letter-spacing: .09em;
+  letter-spacing: .12em;
   text-transform: uppercase;
 }
 .admin-nav-link {
   position: relative;
-  min-height: 40px;
-  color: var(--admin-ink-2);
+  color: #475569;
+  font-weight: 500;
   transition: background-color .15s, color .15s;
 }
+.admin-nav-link svg { color: #64748b; transition: color .15s; }
 .admin-nav-link:hover { background: #f3f6fa; color: var(--admin-ink); }
+.admin-nav-link:hover svg { color: var(--admin-ink); }
 .admin-nav-link-active,
 .admin-nav-link-active:hover {
   background: var(--admin-blue-soft);
   color: var(--admin-blue);
   font-weight: 650;
 }
+.admin-nav-link-active svg,
+.admin-nav-link-active:hover svg { color: var(--admin-blue); }
 .admin-nav-link-active::before {
   content: "";
   position: absolute;
-  left: -10px;
-  top: 8px;
-  bottom: 8px;
+  left: -12px;
+  top: 9px;
+  bottom: 9px;
   width: 3px;
   border-radius: 0 3px 3px 0;
   background: var(--admin-blue);
 }
+.admin-side-icon {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  place-items: center;
+  border-radius: 9px;
+  color: #64748b;
+  transition: background-color .15s, color .15s;
+}
+.admin-side-icon:hover { background: #eef2f7; color: var(--admin-ink); }
+.admin-sidebar :is(a, button):focus-visible { outline: 2px solid var(--admin-blue); outline-offset: 2px; }
 .admin-menu-item {
   display: flex;
   align-items: center;
@@ -472,7 +493,6 @@ textarea.admin-input { resize: vertical; line-height: 1.5; }
 
 /* Focus */
 .admin-page :is(button, a):focus-visible,
-.admin-sidebar :is(button, a):focus-visible,
 .admin-topbar :is(button, a):focus-visible,
 .admin-modal :is(button, a):focus-visible { outline: 2px solid var(--admin-blue); outline-offset: 2px; }
 
