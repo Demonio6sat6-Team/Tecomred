@@ -124,16 +124,11 @@ Catálogo de productos, carrito con pedidos por WhatsApp y una API propia sobre 
 
 ## ✦ Arquitectura
 
-```mermaid
-flowchart LR
-    U["👤 Cliente"] --> F["Tienda<br/>React + Vite"]
-    A["🛠️ Administrador"] --> P["Panel admin<br/>React + Vite"]
-    F -->|REST /api| B["API<br/>Express + TypeScript"]
-    P -->|REST /api + JWT| B
-    B --> D[("MySQL")]
-    B --> M["/uploads<br/>imágenes"]
-    F -.->|pedido| W["WhatsApp"]
-```
+<div align="center">
+  <img src="docs/arquitectura.png" alt="Arquitectura: la tienda y el panel consumen la API REST, que usa MySQL y guarda imágenes en uploads; los pedidos se envían por WhatsApp" width="100%" />
+</div>
+
+<br />
 
 | Capa | Tecnología | Hosting |
 | :--- | :--- | :--- |
