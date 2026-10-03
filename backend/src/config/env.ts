@@ -19,6 +19,7 @@ const envSchema = z.object({
   MYSQL_USER: z.string().default("root"),
   MYSQL_PASSWORD: z.string().default(""),
   MYSQL_DATABASE: z.string().default("tecomred"),
+  MYSQL_PORT: z.coerce.number().int().positive().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
