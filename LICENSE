@@ -1,0 +1,92 @@
+LICENCIA DE SOFTWARE PROPIETARIO
+SiscomRed — Sistemas, Cómputo y Redes
+
+Copyright (c) 2026 SiscomRed. Todos los derechos reservados.
+
+1. TITULARIDAD
+
+   Este repositorio, incluido su código fuente, código compilado, diseño,
+   interfaces, bases de datos, documentación, imágenes, logotipos y demás
+   contenido (en adelante, el "Software"), es propiedad exclusiva de
+   SiscomRed (en adelante, el "Titular") y está protegido por las leyes de
+   derechos de autor y propiedad intelectual de la República del Perú
+   (Decreto Legislativo N.° 822) y por los tratados internacionales
+   aplicables.
+
+2. AUSENCIA DE LICENCIA
+
+   La publicación del Software en un repositorio visible NO otorga ninguna
+   licencia ni derecho de uso. Salvo autorización previa, expresa y por
+   escrito del Titular, queda PROHIBIDO:
+
+   a) Copiar, reproducir o descargar el Software, total o parcialmente,
+      para cualquier fin distinto de su simple visualización.
+   b) Modificar, adaptar, traducir o crear obras derivadas del Software.
+   c) Distribuir, publicar, sublicenciar, vender, alquilar o transferir el
+      Software o cualquier copia o parte del mismo.
+   d) Usar el Software, o partes de él, en otros proyectos, productos o
+      servicios, sean comerciales o no.
+   e) Desplegar, alojar u ofrecer el Software como servicio a terceros.
+   f) Aplicar ingeniería inversa, descompilar o intentar obtener el código
+      fuente de cualquier versión compilada del Software.
+   g) Eliminar, ocultar o alterar avisos de derechos de autor, marcas o
+      esta licencia.
+   h) Usar el Software o su contenido para entrenar, ajustar o evaluar
+      sistemas de inteligencia artificial o aprendizaje automático.
+
+3. VISUALIZACIÓN EN GITHUB
+
+   Únicamente se permite ver el Software a través de la plataforma GitHub,
+   en la medida mínima exigida por los Términos de Servicio de GitHub. Esa
+   visualización no concede ningún otro derecho sobre el Software.
+
+4. MARCAS
+
+   El nombre "SiscomRed", "TecomRed", sus logotipos y elementos de
+   identidad visual son signos distintivos del Titular y no pueden usarse
+   sin su autorización. Los nombres y logotipos de terceros que aparecen
+   en el Software (por ejemplo, marcas de fabricantes) pertenecen a sus
+   respectivos propietarios.
+
+5. COMPONENTES DE TERCEROS
+
+   El Software utiliza bibliotecas de código abierto que se rigen por sus
+   propias licencias. Esta licencia no modifica los derechos ni las
+   obligaciones que esas licencias establecen sobre dichos componentes.
+
+6. COLABORADORES
+
+   Toda contribución enviada a este repositorio (código, diseño o
+   documentación) se integra al Software, y su autor cede al Titular los
+   derechos patrimoniales necesarios para usarla, modificarla y
+   distribuirla, salvo acuerdo escrito en contrario.
+
+7. TERMINACIÓN
+
+   Cualquier uso no autorizado pone fin de forma inmediata a cualquier
+   permiso que se hubiera concedido. El infractor deberá cesar todo uso y
+   destruir todas las copias del Software en su poder, sin perjuicio de las
+   acciones civiles, administrativas o penales que correspondan.
+
+8. EXENCIÓN DE GARANTÍAS
+
+   EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍAS DE NINGÚN TIPO,
+   EXPRESAS O IMPLÍCITAS, INCLUIDAS, ENTRE OTRAS, LAS DE COMERCIABILIDAD,
+   IDONEIDAD PARA UN FIN DETERMINADO Y NO INFRACCIÓN.
+
+9. LIMITACIÓN DE RESPONSABILIDAD
+
+   EN NINGÚN CASO EL TITULAR SERÁ RESPONSABLE DE DAÑOS DIRECTOS,
+   INDIRECTOS, INCIDENTALES, ESPECIALES O CONSECUENTES, NI DE PÉRDIDAS DE
+   DATOS, INGRESOS O BENEFICIOS, DERIVADOS DEL USO O DE LA IMPOSIBILIDAD
+   DE USO DEL SOFTWARE.
+
+10. LEY APLICABLE Y JURISDICCIÓN
+
+   Esta licencia se rige por las leyes de la República del Perú. Toda
+   controversia se someterá a los jueces y tribunales competentes del Perú.
+
+11. CONTACTO
+
+   Para solicitar permisos o licencias de uso, escribe a:
+   siscomred2017@gmail.com
