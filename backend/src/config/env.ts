@@ -7,6 +7,7 @@ process.env.MYSQL_HOST ??= process.env.MYSQLHOST;
 process.env.MYSQL_USER ??= process.env.MYSQLUSER;
 process.env.MYSQL_PASSWORD ??= process.env.MYSQLPASSWORD;
 process.env.MYSQL_DATABASE ??= process.env.MYSQLDATABASE;
+if (process.env.MYSQLPORT) process.env.MYSQL_PORT ??= process.env.MYSQLPORT;
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -19,6 +20,7 @@ const envSchema = z.object({
   MYSQL_USER: z.string().default("root"),
   MYSQL_PASSWORD: z.string().default(""),
   MYSQL_DATABASE: z.string().default("tecomred"),
+  MYSQL_PORT: z.coerce.number().int().positive().default(3306),
 }).superRefine((value, context) => {
   if (value.NODE_ENV !== "production") return;
   if (!process.env.ADMIN_PASSWORD || value.ADMIN_PASSWORD === "change-this-password") {

@@ -5,8 +5,7 @@ import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { useAdmin } from '../context/AdminContext';
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined)
-  ?? (import.meta.env.DEV ? '/api' : 'https://tecomred-production-910c.up.railway.app/api');
+const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '/api';
 
 type Mode = 'login' | 'register';
 
