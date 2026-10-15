@@ -34,14 +34,32 @@ function readStoredUser(): CustomerUser | null {
 }
 
 export function CustomerProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<CustomerUser | null>(() => readStoredUser());
+  const [user, setUser] = useState<CustomerUser | null>(() => {
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+    const storedUser = readStoredUser();
+    if (!storedToken || !storedUser) {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      return null;
+    }
+    return storedUser;
+  });
   const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
 
   // Mantener sincronizado el estado entre pestañas / cambios externos de sesión.
   useEffect(() => {
     const sync = () => {
-      setUser(readStoredUser());
-      setToken(localStorage.getItem(TOKEN_KEY));
+      const storedToken = localStorage.getItem(TOKEN_KEY);
+      const storedUser = readStoredUser();
+      if (!storedToken || !storedUser) {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        setUser(null);
+        setToken(null);
+        return;
+      }
+      setUser(storedUser);
+      setToken(storedToken);
     };
     window.addEventListener('storage', sync);
     window.addEventListener('customer-auth-change', sync);

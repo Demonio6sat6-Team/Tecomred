@@ -32,8 +32,7 @@ function showLoginNotice(kind: 'success' | 'error', title: string, message: stri
 export default function Account() {
   const navigate = useNavigate();
   const { login } = useAdmin();
-  const { user: customerUser, isAuthenticated: isCustomerLoggedIn, logout: logoutCustomer } = useCustomer();
-  const { login: loginCustomer } = useCustomer();
+  const { user: customerUser, isAuthenticated: isCustomerLoggedIn, login: loginCustomer, logout: logoutCustomer } = useCustomer();
   const [mode, setMode] = useState<Mode>('login');
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
   const [message, setMessage] = useState('');
@@ -57,8 +56,7 @@ export default function Account() {
       if (!response.ok) throw new Error(data.error || 'No se pudo completar la operación');
       if (!data.token || !data.user) throw new Error('Respuesta de acceso inválida');
       if (data.user.role === 'admin' || data.user.role === 'editor') {
-        localStorage.removeItem('customer_token');
-        localStorage.removeItem('customer_user');
+        logoutCustomer();
         localStorage.setItem('admin_token', data.token);
         login();
         if (mode === 'login') showLoginNotice('success', 'Bienvenido al panel', `Hola, ${data.user.name || data.user.username}. Tu sesión está lista.`);
