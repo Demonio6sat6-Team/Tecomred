@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
+import type { RowDataPacket } from "mysql2";
 import { env } from "../config/env.js";
 import pool from "../config/mysql.js";
 
@@ -19,6 +20,19 @@ async function ensureDefaultAdmin() {
     "INSERT INTO administrators (name, username, password_hash, role) VALUES (?, ?, ?, 'admin')",
     ["Administrador principal", env.ADMIN_USER, passwordHash],
   );
+}
+
+async function ensureCustomerDirectoryRecord(user: { name: string; email: string; phone: string | null }) {
+  const email = user.email.trim().toLowerCase();
+  const [rows] = await pool.execute<RowDataPacket[]>(
+    "SELECT id FROM admin_records WHERE kind = 'customer' AND LOWER(JSON_UNQUOTE(JSON_EXTRACT(payload, '$.email'))) = ? LIMIT 1",
+    [email],
+  );
+  if (rows.length) return;
+
+  const joined = new Date().toLocaleDateString("es-PE", { month: "short", year: "numeric" });
+  const payload = { name: user.name, email, phone: user.phone || "", city: "", orders: 0, totalSpent: 0, joined, status: "Activo" };
+  await pool.execute("INSERT INTO admin_records (kind, payload) VALUES ('customer', ?)", [JSON.stringify(payload)]);
 }
 
 export const authController = {
@@ -50,6 +64,7 @@ export const authController = {
       if (!user || !(await bcrypt.compare(password, user.password_hash))) {
         return res.status(401).json({ error: "Correo, usuario o contraseña incorrectos" });
       }
+      await ensureCustomerDirectoryRecord(user);
       return res.json({ token: signToken("user", user.id), user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: "customer" } });
     } catch (error) {
       console.error("Login failed", error);
@@ -71,7 +86,15 @@ export const authController = {
         [name.trim(), email.trim().toLowerCase(), passwordHash, phone || null],
       );
       const userId = (result as { insertId: number }).insertId;
-      return res.status(201).json({ token: signToken("user", userId), user: { id: userId, name: name.trim(), email: email.trim().toLowerCase(), phone: phone || null } });
+      const normalizedName = name.trim();
+      const normalizedEmail = email.trim().toLowerCase();
+      const normalizedPhone = typeof phone === "string" ? phone.trim() : "";
+      try {
+        await ensureCustomerDirectoryRecord({ name: normalizedName, email: normalizedEmail, phone: normalizedPhone || null });
+      } catch (syncError) {
+        console.error("Customer directory sync failed after registration", syncError);
+      }
+      return res.status(201).json({ token: signToken("user", userId), user: { id: userId, name: normalizedName, email: normalizedEmail, phone: normalizedPhone || null, role: "customer" } });
     } catch (error: unknown) {
       if ((error as { code?: string }).code === "ER_DUP_ENTRY") return res.status(409).json({ error: "El correo ya está registrado" });
       console.error("User registration failed", error);

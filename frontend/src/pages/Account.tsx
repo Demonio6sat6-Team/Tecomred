@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, LockKeyhole, Mail, UserRound, Phone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Heart, LockKeyhole, Mail, Package, ShoppingBag, UserRound, Phone } from 'lucide-react';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { useAdmin } from '../context/AdminContext';
 import { useCustomer } from '../context/CustomerContext';
+import { useProductLists } from '../context/useProductLists';
+import { useStore } from '../context/StoreContext';
+import ProductCard from '../components/ProductCard';
+import type { Product } from '../types';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '/api';
 
@@ -33,6 +37,12 @@ export default function Account() {
   const navigate = useNavigate();
   const { login } = useAdmin();
   const { user: customerUser, isAuthenticated: isCustomerLoggedIn, login: loginCustomer, logout: logoutCustomer } = useCustomer();
+  const { favoriteIds } = useProductLists();
+  const { products } = useStore();
+  const favoriteProducts = favoriteIds.flatMap(id => {
+    const product = products.find(item => item.id === id);
+    return product ? [product] : [];
+  });
   const [mode, setMode] = useState<Mode>('login');
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
   const [message, setMessage] = useState('');
@@ -114,26 +124,11 @@ export default function Account() {
             <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-[#0052cc]"><ArrowLeft size={17} /> Volver a la tienda</Link>
           </header>
 
-          <div className="account-content mx-auto flex w-full max-w-[440px] min-h-0 flex-1 flex-col justify-center py-8 lg:py-12">
+          <div className={`account-content mx-auto flex w-full ${isCustomerLoggedIn ? 'max-w-6xl justify-start' : 'max-w-[440px] justify-center'} min-h-0 flex-1 flex-col py-8 lg:py-12`}>
             {isCustomerLoggedIn ? (
-              <div className="account-session text-center">
-                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 border border-blue-100">
-                  <UserRound className="h-9 w-9 text-[#0052cc]" />
-                </div>
-                <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#348f00]">Sesión iniciada</p>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#11264b] sm:text-4xl">Hola, {customerUser?.name || 'bienvenido'}</h1>
-                <p className="mt-3 text-sm leading-6 text-slate-500">Ya estás dentro de tu cuenta. Continúa explorando la tienda o gestiona tus pedidos.</p>
-                <div className="mt-8 flex flex-col gap-3">
-                  <button onClick={() => navigate('/', { replace: true })} className="group flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0052cc] px-5 text-sm font-bold text-white shadow-lg shadow-blue-600/15 transition hover:bg-[#003fa8]">
-                    Ir a la tienda <ArrowRight size={18} className="transition group-hover:translate-x-1" />
-                  </button>
-                  <button onClick={() => { logoutCustomer(); setMessage(''); }} className="flex h-12 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-600 transition hover:bg-slate-50">
-                    Cerrar sesión
-                  </button>
-                </div>
-              </div>
+              <CustomerDashboard userName={customerUser?.name || 'bienvenido'} email={customerUser?.email || ''} onLogout={logoutCustomer} favoriteProducts={favoriteProducts} />
             ) : (
-            <>
+              <>
             <div className="account-intro mb-8">
               <p className="mb-3 text-xs font-extrabold uppercase tracking-[0.2em] text-[#348f00]">Tu espacio en Siscomred</p>
               <h1 className="text-3xl font-extrabold tracking-tight text-[#11264b] sm:text-4xl">{mode === 'login' ? 'Qué bueno verte de nuevo' : 'Comencemos juntos'}</h1>
@@ -154,13 +149,41 @@ export default function Account() {
               <label className="block"><span className="mb-2 block text-sm font-semibold text-slate-700">Contraseña</span><span className="relative block"><LockKeyhole size={18} className="absolute left-3.5 top-3.5 text-slate-400" /><input required minLength={mode === 'register' ? 8 : undefined} type={showPassword ? 'text' : 'password'} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder={mode === 'login' ? 'Ingresa tu contraseña' : 'Mínimo 8 caracteres'} className={`${inputClass} pr-12`} /><button type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center text-slate-400 hover:text-[#0052cc]">{showPassword ? <EyeOff size={19} /> : <Eye size={19} />}</button></span></label>
               <button disabled={loading} className="group flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0052cc] px-5 text-sm font-bold text-white shadow-lg shadow-blue-600/15 transition hover:bg-[#003fa8] disabled:cursor-wait disabled:opacity-60">{loading ? 'Procesando...' : mode === 'login' ? 'Entrar a mi cuenta' : 'Crear mi cuenta'} {!loading && <ArrowRight size={18} className="transition group-hover:translate-x-1" />}</button>
             </form>
-            <p className="account-terms mt-6 text-center text-xs leading-5 text-slate-500">Al continuar aceptas nuestros <Link to="/terminos" className="font-semibold text-[#0052cc] hover:underline">términos y condiciones</Link>.</p>
-            </>
+            <p className="account-terms mt-6 text-center text-xs leading-5 text-slate-500">Al continuar aceptas nuestros <Link to="/terminos" className="font-semibold text-[#0052cc] hover:underline">términos y condiciones</Link>.  </p>
+                
+              </>
             )}
           </div>
           <div className="account-mobile-copyright pb-6 text-center text-xs text-slate-400 lg:hidden">© {new Date().getFullYear()} Siscomred</div>
         </div>
       </div>
     </main>
+  );
+}
+
+function CustomerDashboard({ userName, email, onLogout, favoriteProducts }: { userName: string; email: string; onLogout: () => void; favoriteProducts: Product[] }) {
+  return (
+    <div className="w-full space-y-8">
+      <section className="flex flex-col gap-5 rounded-3xl border-blue-100 bg-gradient-to-br from-white to-blue-50/70 p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-[#0052cc]"><UserRound className="h-8 w-8" /></div>
+          <div className="min-w-0">
+            <p className="mb-1 text-xs font-extrabold uppercase tracking-[0.18em] text-[#348f00]">Mi cuenta · Sesión activa</p>
+            <h1 className="truncate text-2xl font-extrabold tracking-tight text-[#11264b] sm:text-3xl">Hola, {userName}</h1>
+            <p className="mt-1 truncate text-sm text-slate-600">{email}</p>
+          </div>
+        </div>
+        <button onClick={onLogout} className="inline-flex min-h-11 items-center justify-center rounded-xl border-slate-200 bg-white px-5 text-sm font-bold text-slate-600 transition hover:border-red-200 hover:text-red-600">Cerrar sesión</button>
+      </section>
+      <section className="grid gap-4 sm:grid-cols-3">
+        <Link to="/favoritos" className="group rounded-2xl border-rose-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-rose-50 text-rose-500"><Heart className="h-5 w-5" /></span><span className="block text-lg font-extrabold text-slate-900">{favoriteProducts.length} favoritos</span><span className="mt-1 block text-sm text-slate-500">Productos que guardaste</span></Link>
+        <Link to="/carrito" className="group rounded-2xl border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#0052cc]"><ShoppingBag className="h-5 w-5" /></span><span className="block text-lg font-extrabold text-slate-900">Mi carrito</span><span className="mt-1 block text-sm text-slate-500">Continúa tu compra</span></Link>
+        <Link to="/productos" className="group rounded-2xl border-emerald-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"><span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><Package className="h-5 w-5" /></span><span className="block text-lg font-extrabold text-slate-900">Explorar catálogo</span><span className="mt-1 block text-sm text-slate-500">Encuentra algo para tu proyecto</span></Link>
+      </section>
+      <section>
+        <div className="mb-5 flex items-end justify-between gap-3"><div><p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#348f00]">Tu selección</p><h2 className="mt-1 text-2xl font-extrabold text-[#11264b]">Mis favoritos</h2></div><Link to="/favoritos" className="shrink-0 text-sm font-bold text-[#0052cc] hover:underline">Ver todos</Link></div>
+        {favoriteProducts.length ? <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{favoriteProducts.slice(0, 3).map(product => <ProductCard key={product.id} product={product} />)}</div> : <div className="rounded-2xl border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center"><Heart className="mx-auto h-8 w-8 text-slate-400" /><p className="mt-3 font-bold text-slate-800">Aún no guardaste favoritos</p><p className="mt-1 text-sm text-slate-500">Pulsa el corazón de un producto para tenerlo siempre a mano.</p><Link to="/productos" className="mt-4 inline-flex min-h-10 items-center rounded-lg bg-[#0052cc] px-4 text-sm font-bold text-white hover:bg-[#003fa8]">Explorar productos</Link></div>}
+      </section>
+    </div>
   );
 }
