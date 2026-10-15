@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAdmin } from '../context/AdminContext';
+import { useCustomer } from '../context/CustomerContext';
 import { useStore } from '../context/StoreContext';
 import { useCurrency } from '../hooks/useCurrency';
 import CartDrawer from './CartDrawer';
@@ -23,6 +24,7 @@ const navLinks = [
 export default function Navbar() {
   const { totalItems, totalPrice } = useCart();
   const { settings } = useAdmin();
+  const { user: customerUser, isAuthenticated: isCustomerLoggedIn, logout: logoutCustomer } = useCustomer();
   const { products } = useStore();
   const { favoriteIds, compareIds } = useProductLists();
   const { formatShort } = useCurrency();
@@ -154,8 +156,17 @@ export default function Navbar() {
               className="flex items-center gap-1 text-slate-700 hover:text-[#0052cc] font-medium transition-colors"
             >
               <UserRound className="w-3.5 h-3.5 text-slate-500" />
-              <span>Mi cuenta</span>
+              <span>{isCustomerLoggedIn ? (customerUser?.name?.split(' ')[0] || 'Mi cuenta') : 'Mi cuenta'}</span>
             </Link>
+            {isCustomerLoggedIn && (
+              <button
+                type="button"
+                onClick={logoutCustomer}
+                className="hidden sm:flex items-center gap-1 text-slate-500 hover:text-red-600 font-medium transition-colors"
+              >
+                Cerrar sesión
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -474,7 +485,7 @@ export default function Navbar() {
               onClick={() => setMenuOpen(false)}
               className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold text-center hover:bg-slate-200 transition-colors flex items-center justify-center gap-1.5"
             >
-              <UserRound className="w-4 h-4 text-slate-600" /> Mi cuenta
+              <UserRound className="w-4 h-4 text-slate-600" /> {isCustomerLoggedIn ? `Hola, ${customerUser?.name?.split(' ')[0] || 'cliente'}` : 'Mi cuenta'}
             </Link>
             <Link
               to="/carrito"
@@ -484,6 +495,15 @@ export default function Navbar() {
               <ShoppingCart className="w-4 h-4 text-white" /> Carrito ({totalItems})
             </Link>
           </div>
+          {isCustomerLoggedIn && (
+            <button
+              type="button"
+              onClick={() => { logoutCustomer(); setMenuOpen(false); }}
+              className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-colors"
+            >
+              Cerrar sesión
+            </button>
+          )}
         </div>
       )}
     </header>

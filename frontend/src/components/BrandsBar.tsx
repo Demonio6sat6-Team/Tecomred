@@ -30,6 +30,7 @@ export default function BrandsBar() {
 
     let animId: number;
     let lastTime = performance.now();
+    let accumulator = 0; // acumula fracciones de píxel para un desplazamiento realmente fluido
 
     const step = (now: number) => {
       const delta = now - lastTime;
@@ -37,15 +38,25 @@ export default function BrandsBar() {
 
       // Si el usuario no está tocando o arrastrando, avanzar automáticamente
       if (!isUserInteracting && el) {
-        const speed = 0.055; // px por milisegundo (~35px/s en móvil)
-        el.scrollLeft += speed * delta;
+        const speed = 0.045; // px por milisegundo (~45px/s)
+        accumulator += speed * delta;
 
-        // Bucle infinito sin saltos
-        if (el.scrollLeft >= loopWidth * 2) {
-          el.scrollLeft -= loopWidth;
-        } else if (el.scrollLeft < loopWidth) {
-          el.scrollLeft += loopWidth;
+        // Avanzamos solo la parte entera acumulada (evita acumulación de sub-píxeles y tirones)
+        const wholePixels = Math.trunc(accumulator);
+        if (wholePixels !== 0) {
+          accumulator -= wholePixels;
+          el.scrollLeft += wholePixels;
+
+          // Bucle infinito sin saltos perceptibles
+          if (el.scrollLeft >= loopWidth * 2) {
+            el.scrollLeft -= loopWidth;
+          } else if (el.scrollLeft < loopWidth) {
+            el.scrollLeft += loopWidth;
+          }
         }
+      } else {
+        // Mientras el usuario interactúa, reseteamos el acumulador para retomar sin tirón
+        accumulator = 0;
       }
       animId = requestAnimationFrame(step);
     };
@@ -104,6 +115,8 @@ export default function BrandsBar() {
               // Reanuda el auto-scroll 1.5s después de soltar
               setTimeout(() => setIsUserInteracting(false), 1500);
             }}
+            onMouseEnter={() => setIsUserInteracting(true)}
+            onMouseLeave={() => setIsUserInteracting(false)}
             onTouchStart={() => setIsUserInteracting(true)}
             onTouchEnd={() => {
               setTimeout(() => setIsUserInteracting(false), 1500);

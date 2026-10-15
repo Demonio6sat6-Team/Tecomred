@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, LockKeyhole, Mail, UserRound
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { useAdmin } from '../context/AdminContext';
+import { useCustomer } from '../context/CustomerContext';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '/api';
 
@@ -31,6 +32,8 @@ function showLoginNotice(kind: 'success' | 'error', title: string, message: stri
 export default function Account() {
   const navigate = useNavigate();
   const { login } = useAdmin();
+  const { user: customerUser, isAuthenticated: isCustomerLoggedIn, logout: logoutCustomer } = useCustomer();
+  const { login: loginCustomer } = useCustomer();
   const [mode, setMode] = useState<Mode>('login');
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
   const [message, setMessage] = useState('');
@@ -61,9 +64,12 @@ export default function Account() {
         if (mode === 'login') showLoginNotice('success', 'Bienvenido al panel', `Hola, ${data.user.name || data.user.username}. Tu sesión está lista.`);
         navigate('/admin/dashboard', { replace: true });
       } else {
-        localStorage.setItem('customer_token', data.token);
-        localStorage.setItem('customer_user', JSON.stringify(data.user));
-        if (mode === 'login') showLoginNotice('success', 'Qué bueno verte de nuevo', `Hola, ${data.user.name || 'bienvenido'}. Ya puedes continuar en la tienda.`);
+        loginCustomer(data.user, data.token);
+        if (mode === 'login') {
+          showLoginNotice('success', 'Qué bueno verte de nuevo', `Hola, ${data.user.name || 'bienvenido'}. Ya puedes continuar en la tienda.`);
+        } else {
+          showLoginNotice('success', '¡Cuenta creada!', `Bienvenido, ${data.user.name || 'gracias por unirte'}. Tu sesión se inició automáticamente.`);
+        }
         navigate('/', { replace: true });
       }
     } catch (error) {
@@ -111,6 +117,25 @@ export default function Account() {
           </header>
 
           <div className="account-content mx-auto flex w-full max-w-[440px] min-h-0 flex-1 flex-col justify-center py-8 lg:py-12">
+            {isCustomerLoggedIn ? (
+              <div className="account-session text-center">
+                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-blue-50 border border-blue-100">
+                  <UserRound className="h-9 w-9 text-[#0052cc]" />
+                </div>
+                <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.2em] text-[#348f00]">Sesión iniciada</p>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#11264b] sm:text-4xl">Hola, {customerUser?.name || 'bienvenido'}</h1>
+                <p className="mt-3 text-sm leading-6 text-slate-500">Ya estás dentro de tu cuenta. Continúa explorando la tienda o gestiona tus pedidos.</p>
+                <div className="mt-8 flex flex-col gap-3">
+                  <button onClick={() => navigate('/', { replace: true })} className="group flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0052cc] px-5 text-sm font-bold text-white shadow-lg shadow-blue-600/15 transition hover:bg-[#003fa8]">
+                    Ir a la tienda <ArrowRight size={18} className="transition group-hover:translate-x-1" />
+                  </button>
+                  <button onClick={() => { logoutCustomer(); setMessage(''); }} className="flex h-12 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-600 transition hover:bg-slate-50">
+                    Cerrar sesión
+                  </button>
+                </div>
+              </div>
+            ) : (
+            <>
             <div className="account-intro mb-8">
               <p className="mb-3 text-xs font-extrabold uppercase tracking-[0.2em] text-[#348f00]">Tu espacio en Siscomred</p>
               <h1 className="text-3xl font-extrabold tracking-tight text-[#11264b] sm:text-4xl">{mode === 'login' ? 'Qué bueno verte de nuevo' : 'Comencemos juntos'}</h1>
@@ -132,6 +157,8 @@ export default function Account() {
               <button disabled={loading} className="group flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#0052cc] px-5 text-sm font-bold text-white shadow-lg shadow-blue-600/15 transition hover:bg-[#003fa8] disabled:cursor-wait disabled:opacity-60">{loading ? 'Procesando...' : mode === 'login' ? 'Entrar a mi cuenta' : 'Crear mi cuenta'} {!loading && <ArrowRight size={18} className="transition group-hover:translate-x-1" />}</button>
             </form>
             <p className="account-terms mt-6 text-center text-xs leading-5 text-slate-500">Al continuar aceptas nuestros <Link to="/terminos" className="font-semibold text-[#0052cc] hover:underline">términos y condiciones</Link>.</p>
+            </>
+            )}
           </div>
           <div className="account-mobile-copyright pb-6 text-center text-xs text-slate-400 lg:hidden">© {new Date().getFullYear()} Siscomred</div>
         </div>

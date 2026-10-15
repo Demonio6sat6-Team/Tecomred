@@ -5,6 +5,7 @@ import { ToastProvider } from "./context/ToastContext";
 import { AdminProvider, useAdmin } from "./context/AdminContext";
 import { AnalyticsProvider } from "./context/AnalyticsContext";
 import { ProductListsProvider } from "./context/ProductListsContext";
+import { CustomerProvider } from "./context/CustomerContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import AnnouncementBar from "./components/AnnouncementBar";
 import Navbar from "./components/Navbar";
@@ -113,6 +114,7 @@ export default function App() {
         <AdminProvider>
           <ToastProvider>
             <CartProvider>
+              <CustomerProvider>
               <ProductListsProvider>
               <AnalyticsProvider>
                 <Routes>
@@ -148,6 +150,7 @@ export default function App() {
                 </Routes>
               </AnalyticsProvider>
               </ProductListsProvider>
+              </CustomerProvider>
             </CartProvider>
           </ToastProvider>
         </AdminProvider>
