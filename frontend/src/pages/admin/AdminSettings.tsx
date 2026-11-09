@@ -81,7 +81,7 @@ export default function AdminSettings() {
   const handleLogout = async () => {
     if (!await adminAlert.confirm('¿Cerrar sesión?', 'Saldrás del panel de administración en este navegador.', 'Cerrar sesión')) return;
     logout();
-    navigate('/cuenta');
+    navigate('/logtec');
   };
 
   const textField = (key: TextKey, label: string, Icon: ElementType, options: { type?: string; placeholder?: string; hint?: string; required?: boolean; wide?: boolean; maxLength?: number } = {}) => (

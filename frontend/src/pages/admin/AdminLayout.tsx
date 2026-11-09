@@ -106,7 +106,7 @@ export default function AdminLayout() {
   const handleLogout = async () => {
     if (!await adminAlert.confirm('¿Cerrar sesión?', 'Saldrás del panel de administración en este navegador.', 'Cerrar sesión')) return;
     logout();
-    navigate('/cuenta');
+    navigate('/logtec');
   };
   const handleRefresh = async () => {
     setRefreshing(true);

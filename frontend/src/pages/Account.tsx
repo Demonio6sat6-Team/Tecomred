@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Heart, LockKeyhole, Mail, Package, ShoppingBag, UserRound, Phone } from 'lucide-react';
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import { useAdmin } from '../context/AdminContext';
 import { useCustomer } from '../context/CustomerContext';
 import { useProductLists } from '../context/useProductLists';
 import { useStore } from '../context/StoreContext';
@@ -35,7 +34,6 @@ function showLoginNotice(kind: 'success' | 'error', title: string, message: stri
 
 export default function Account() {
   const navigate = useNavigate();
-  const { login } = useAdmin();
   const { user: customerUser, isAuthenticated: isCustomerLoggedIn, login: loginCustomer, logout: logoutCustomer } = useCustomer();
   const { favoriteIds } = useProductLists();
   const { products } = useStore();
@@ -65,21 +63,16 @@ export default function Account() {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'No se pudo completar la operación');
       if (!data.token || !data.user) throw new Error('Respuesta de acceso inválida');
-      if (data.user.role === 'admin' || data.user.role === 'editor') {
-        logoutCustomer();
-        localStorage.setItem('admin_token', data.token);
-        login();
-        if (mode === 'login') showLoginNotice('success', 'Bienvenido al panel', `Hola, ${data.user.name || data.user.username}. Tu sesión está lista.`);
-        navigate('/admin/dashboard', { replace: true });
-      } else {
-        loginCustomer(data.user, data.token);
-        if (mode === 'login') {
-          showLoginNotice('success', 'Qué bueno verte de nuevo', `Hola, ${data.user.name || 'bienvenido'}. Ya puedes continuar en la tienda.`);
-        } else {
-          showLoginNotice('success', '¡Cuenta creada!', `Bienvenido, ${data.user.name || 'gracias por unirte'}. Tu sesión se inició automáticamente.`);
-        }
-        navigate('/', { replace: true });
+      if (data.user.role !== 'customer') {
+        throw new Error('El acceso de administrador está disponible únicamente en la ruta /logtec.');
       }
+      loginCustomer(data.user, data.token);
+      if (mode === 'login') {
+        showLoginNotice('success', 'Qué bueno verte de nuevo', `Hola, ${data.user.name || 'bienvenido'}. Ya puedes continuar en la tienda.`);
+      } else {
+        showLoginNotice('success', '¡Cuenta creada!', `Bienvenido, ${data.user.name || 'gracias por unirte'}. Tu sesión se inició automáticamente.`);
+      }
+      navigate('/', { replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Ocurrió un error';
       if (mode === 'login') {

@@ -31,6 +31,7 @@ const Ubicacion = lazy(() => import("./pages/Ubicacion"));
 const Terminos = lazy(() => import("./pages/Terminos"));
 const Privacidad = lazy(() => import("./pages/Privacidad"));
 const Account = lazy(() => import("./pages/Account"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
@@ -51,7 +52,7 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
   if (isVerifying) {
     return <PageFallback />;
   }
-  return isAuthenticated ? <>{children}</> : <Navigate to="/cuenta" replace />;
+  return isAuthenticated ? <>{children}</> : <Navigate to="/logtec" replace />;
 }
 
 const PageFallback = () => (
@@ -119,7 +120,8 @@ export default function App() {
               <AnalyticsProvider>
                 <Routes>
                   <Route path="/cuenta" element={<Suspense fallback={<PageFallback />}><Account /></Suspense>} />
-                  <Route path="/admin/login" element={<Navigate to="/cuenta" replace />} />
+                  <Route path="/logtec" element={<Suspense fallback={<PageFallback />}><AdminLogin /></Suspense>} />
+                  <Route path="/admin/login" element={<Navigate to="/logtec" replace />} />
                   <Route path="/admin/*" element={<Suspense fallback={<PageFallback />}><AdminGuard><AdminLayout /></AdminGuard></Suspense>}>
                     <Route index element={<Navigate to="dashboard" replace />} />
                     <Route path="dashboard"       element={<AdminDashboard />} />
