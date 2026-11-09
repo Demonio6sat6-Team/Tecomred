@@ -171,7 +171,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
 
   // 1. Send Heartbeat every 10s to keep session alive in backend & local
   useEffect(() => {
-    if (location.pathname.startsWith('/admin')) {
+    if (location.pathname.startsWith('/admin') || location.pathname === '/logtec') {
       setData(prev => {
         const activeSessions = { ...prev.activeSessions };
         delete activeSessions[sessionId.current];
@@ -228,7 +228,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   // 2. Track page views immediately on route change
   useEffect(() => {
     const path = location.pathname;
-    if (path.startsWith('/admin')) return;
+    if (path.startsWith('/admin') || path === '/logtec') return;
 
     const now = Date.now();
     const cleanLabel = getLabel(path);

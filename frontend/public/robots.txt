@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /logtec
 Disallow: /carrito
 Disallow: /checkout
 

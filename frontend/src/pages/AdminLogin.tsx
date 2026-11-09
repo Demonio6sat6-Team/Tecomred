@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, LockKeyhole, ShieldCheck, UserRound } from 'lucide-react';
 import { useAdmin } from '../context/AdminContext';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '/api';
 
@@ -16,6 +17,7 @@ type LoginResponse = {
 };
 
 export default function AdminLogin() {
+  usePageTitle('Acceso Administrativo | SiscomRed');
   const navigate = useNavigate();
   const { isAuthenticated, isVerifying, login } = useAdmin();
   const [username, setUsername] = useState('');

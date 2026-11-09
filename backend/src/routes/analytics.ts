@@ -96,8 +96,8 @@ analyticsRouter.post("/track", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "path and sessionId required" });
   }
 
-  // Skip tracking admin internal pages in visitor analytics
-  if (typeof path === "string" && path.startsWith("/admin")) {
+  // Skip tracking admin internal pages and admin login in visitor analytics
+  if (typeof path === "string" && (path.startsWith("/admin") || path === "/logtec")) {
     return res.json({ success: true, ignored: true });
   }
 
@@ -169,8 +169,8 @@ analyticsRouter.post("/heartbeat", (req: Request, res: Response) => {
     return res.status(400).json({ error: "sessionId required" });
   }
 
-  // Skip tracking admin internal pages in visitor analytics
-  if (typeof path === "string" && path.startsWith("/admin")) {
+  // Skip tracking admin internal pages and admin login in visitor analytics
+  if (typeof path === "string" && (path.startsWith("/admin") || path === "/logtec")) {
     return res.json({ success: true, ignored: true });
   }
 
