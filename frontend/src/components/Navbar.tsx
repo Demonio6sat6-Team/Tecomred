@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  ShoppingCart, Search, Menu, X, UserRound,
+  ShoppingCart, Search, Menu, X,
   Headphones, Heart, ArrowLeftRight, Truck
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAdmin } from '../context/AdminContext';
-import { useCustomer } from '../context/CustomerContext';
 import { useStore } from '../context/StoreContext';
 import { useCurrency } from '../hooks/useCurrency';
 import CartDrawer from './CartDrawer';
@@ -24,7 +23,6 @@ const navLinks = [
 export default function Navbar() {
   const { totalItems, totalPrice } = useCart();
   const { settings } = useAdmin();
-  const { user: customerUser, isAuthenticated: isCustomerLoggedIn, logout: logoutCustomer } = useCustomer();
   const { products } = useStore();
   const { favoriteIds, compareIds } = useProductLists();
   const { formatShort } = useCurrency();
@@ -118,7 +116,7 @@ export default function Navbar() {
     <>
     <header className="sticky top-0 z-50 bg-white shadow-sm" ref={mobileMenuRef}>
       {/* ─────────────────────────────────────────────────────────────
-          TIER 1: TOP UTILITY STRIP (Phone, Free Shipping, Language, Account)
+          TIER 1: TOP UTILITY STRIP (Phone, Free Shipping, Language)
           ───────────────────────────────────────────────────────────── */}
       <div className="bg-slate-50 border-b border-slate-200 text-xs text-slate-600 py-1.5 px-3 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -143,7 +141,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Right: Currency, Language & Account */}
+          {/* Right: Currency & Language */}
           <div className="flex items-center gap-4 sm:gap-6 shrink-0">
             <span className="hidden sm:inline text-slate-500">
               Moneda: <strong className="text-slate-800 font-semibold">PEN (S/.)</strong>
@@ -151,22 +149,6 @@ export default function Navbar() {
             <span className="hidden sm:inline text-slate-500">
               Idioma: <strong className="text-slate-800 font-semibold">Español</strong>
             </span>
-            <Link
-              to="/cuenta"
-              className="flex items-center gap-1 text-slate-700 hover:text-[#0052cc] font-medium transition-colors"
-            >
-              <UserRound className="w-3.5 h-3.5 text-slate-500" />
-              <span>{isCustomerLoggedIn ? (customerUser?.name?.split(' ')[0] || 'Mi cuenta') : 'Mi cuenta'}</span>
-            </Link>
-            {isCustomerLoggedIn && (
-              <button
-                type="button"
-                onClick={logoutCustomer}
-                className="hidden sm:flex items-center gap-1 text-slate-500 hover:text-red-600 font-medium transition-colors"
-              >
-                Cerrar sesión
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -474,36 +456,20 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Account & Cart Buttons */}
+          {/* Favorites, Compare & Cart Buttons */}
           <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
             <Link to="/comparar" onClick={() => setMenuOpen(false)} className="flex items-center justify-center gap-2 rounded-xl bg-blue-50 px-2 py-2.5 text-xs font-bold text-[#0052cc]"><ArrowLeftRight className="h-4 w-4" /> Comparar ({compareIds.length})</Link>
             <Link to="/favoritos" onClick={() => setMenuOpen(false)} className="flex items-center justify-center gap-2 rounded-xl bg-lime-50 px-2 py-2.5 text-xs font-bold text-[#348f00]"><Heart className="h-4 w-4" /> Favoritos ({favoriteIds.length})</Link>
           </div>
-          <div className="pt-2 border-t border-slate-100 flex gap-2">
-            <Link
-              to="/cuenta"
-              onClick={() => setMenuOpen(false)}
-              className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-bold text-center hover:bg-slate-200 transition-colors flex items-center justify-center gap-1.5"
-            >
-              <UserRound className="w-4 h-4 text-slate-600" /> {isCustomerLoggedIn ? `Hola, ${customerUser?.name?.split(' ')[0] || 'cliente'}` : 'Mi cuenta'}
-            </Link>
+          <div className="pt-2 border-t border-slate-100">
             <Link
               to="/carrito"
               onClick={() => setMenuOpen(false)}
-              className="flex-1 py-2.5 rounded-xl bg-[#0052cc] text-white text-xs font-bold text-center hover:bg-[#0041a8] transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+              className="w-full py-2.5 rounded-xl bg-[#0052cc] text-white text-xs font-bold text-center hover:bg-[#0041a8] transition-colors flex items-center justify-center gap-1.5 shadow-sm"
             >
               <ShoppingCart className="w-4 h-4 text-white" /> Carrito ({totalItems})
             </Link>
           </div>
-          {isCustomerLoggedIn && (
-            <button
-              type="button"
-              onClick={() => { logoutCustomer(); setMenuOpen(false); }}
-              className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-colors"
-            >
-              Cerrar sesión
-            </button>
-          )}
         </div>
       )}
     </header>

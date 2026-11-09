@@ -56,7 +56,7 @@ const PAGE_LABELS: Record<string, string> = {
   "/ubicacion": "Ubicación de Tienda",
   "/terminos": "Términos y Condiciones",
   "/privacidad": "Política de Privacidad",
-  "/cuenta": "Mi Cuenta",
+  "/logtec": "Acceso Administración",
 };
 
 function resolveLabel(path: string, providedLabel?: string): string {

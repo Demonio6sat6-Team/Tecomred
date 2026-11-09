@@ -50,22 +50,13 @@ export const authController = {
         [identifier, identifier],
       );
       const admin = (rows as { id: number; name: string; username: string; email: string | null; password_hash: string; role: string }[])[0];
-      if (admin && await bcrypt.compare(password, admin.password_hash)) {
-        return res.status(200).json({
-          token: signToken("administrator", admin.id, admin.role),
-          user: { id: admin.id, name: admin.name, username: admin.username, email: admin.email, role: admin.role },
-        });
+      if (!admin || !(await bcrypt.compare(password, admin.password_hash))) {
+        return res.status(401).json({ error: "Credenciales de administrador incorrectas" });
       }
-      const [userRows] = await pool.query(
-        "SELECT id, name, email, phone, password_hash FROM users WHERE email = ? AND is_active = 1 LIMIT 1",
-        [identifier],
-      );
-      const user = (userRows as { id: number; name: string; email: string; phone: string | null; password_hash: string }[])[0];
-      if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-        return res.status(401).json({ error: "Correo, usuario o contraseña incorrectos" });
-      }
-      await ensureCustomerDirectoryRecord(user);
-      return res.json({ token: signToken("user", user.id), user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: "customer" } });
+      return res.status(200).json({
+        token: signToken("administrator", admin.id, admin.role),
+        user: { id: admin.id, name: admin.name, username: admin.username, email: admin.email, role: admin.role },
+      });
     } catch (error) {
       console.error("Login failed", error);
       return res.status(503).json({ error: "Authentication service unavailable" });
